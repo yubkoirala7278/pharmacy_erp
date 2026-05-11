@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, usePage } from "@inertiajs/react";
+import { Link, usePage, router } from "@inertiajs/react";
 
 const navItems = [
     {
@@ -382,6 +382,7 @@ export default function AppLayout({ children, title = "Dashboard" }) {
     const [sidebarOpen, setSidebarOpen] = useState(false); // mobile drawer
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false); // desktop collapse
     const [isFullscreen, setIsFullscreen] = useState(false);
+    const [userDropdownOpen, setUserDropdownOpen] = useState(false);
     const { url } = usePage();
 
     const isActive = (href) => {
@@ -415,6 +416,11 @@ export default function AppLayout({ children, title = "Dashboard" }) {
         document.addEventListener("fullscreenchange", handler);
         return () => document.removeEventListener("fullscreenchange", handler);
     }, []);
+
+    const handleLogout = () => {
+        setUserDropdownOpen(false);
+        router.post("/logout");
+    };
 
     const collapsed = sidebarCollapsed;
 
@@ -557,10 +563,25 @@ export default function AppLayout({ children, title = "Dashboard" }) {
                             <span className="notif-dot"></span>
                         </button>
                         <div className="topbar-divider" />
-                        <div className="topbar-user">
+                        <div
+                            className={`topbar-user ${userDropdownOpen ? "topbar-user--open" : ""}`}
+                            onClick={() => setUserDropdownOpen((v) => !v)}
+                        >
                             <div className="topbar-avatar">AK</div>
                             <span className="topbar-username">Admin Khan</span>
                             <NavIcon name="chevron" />
+
+                            {userDropdownOpen && (
+                                <div className="topbar-user-dropdown">
+                                    <button
+                                        type="button"
+                                        className="topbar-user-dropdown-item"
+                                        onClick={handleLogout}
+                                    >
+                                        Logout
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </header>
