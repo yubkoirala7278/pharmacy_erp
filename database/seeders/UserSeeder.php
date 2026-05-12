@@ -22,7 +22,7 @@ class UserSeeder extends Seeder
             ]
         );
 
-        // Assign super-admin role
-        $superAdmin->assignRole('super-admin');
+        // Assign super_admin role
+        $superAdmin->assignRole('super_admin');
     }
 }

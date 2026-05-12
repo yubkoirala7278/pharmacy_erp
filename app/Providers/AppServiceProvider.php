@@ -23,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         RedirectIfAuthenticated::redirectUsing(function () {
-            if (Auth::check() && Auth::user()->hasAnyRole(['admin', 'super-admin'])) {
+            if (Auth::check() && Auth::user()->hasAnyRole(['admin', 'super_admin'])) {
                 return '/admin/dashboard';
             }
 
