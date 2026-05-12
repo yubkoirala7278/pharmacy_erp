@@ -5,6 +5,7 @@ namespace App\Services;
 use Illuminate\Database\Eloquent\Collection;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use App\Helpers\SlugHelper;
 
 class RoleService
 {
@@ -32,7 +33,7 @@ class RoleService
 
         ksort($grouped);
         foreach ($grouped as &$permissionGroup) {
-            usort($permissionGroup, fn ($a, $b) => strcmp($a['display_name'], $b['display_name']));
+            usort($permissionGroup, fn($a, $b) => strcmp($a['display_name'], $b['display_name']));
         }
         unset($permissionGroup);
 
@@ -46,6 +47,7 @@ class RoleService
     {
         // Create the role
         $role = Role::create([
+            'slug'         => SlugHelper::generate(),
             'name' => $data['name'],
             'display_name' => $data['display_name'],
             'description' => $data['description'] ?? null,

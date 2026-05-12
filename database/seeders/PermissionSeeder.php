@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use App\Helpers\SlugHelper;
 
 class PermissionSeeder extends Seeder
 {
@@ -127,6 +128,7 @@ class PermissionSeeder extends Seeder
 
         // Create super-admin role with all permissions
         $superAdminRole = Role::firstOrCreate(['name' => 'super_admin'], [
+            'slug'         => SlugHelper::generate(),
             'display_name' => 'Super Administrator',
             'description' => 'Full access to all system features'
         ]);
