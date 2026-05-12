@@ -302,6 +302,14 @@ export default function Create({ permissions }) {
     };
 
     const infoValid = data.name.trim() && data.display_name.trim();
+    const goToPermissions = (e) => {
+        if (e && e.preventDefault) {
+            e.preventDefault();
+        }
+        if (infoValid) {
+            setStep(2);
+        }
+    };
 
     return (
         <AppLayout title="Create Role">
@@ -339,10 +347,7 @@ export default function Create({ permissions }) {
                     <button
                         type="button"
                         className={`cr-step-btn ${step === 2 ? "cr-step-btn--active" : ""}`}
-                        onClick={(e) => {
-                            e.preventDefault();
-                            if (infoValid) setStep(2);
-                        }}
+                        onClick={goToPermissions}
                         style={{
                             opacity: infoValid ? 1 : 0.5,
                             cursor: infoValid ? "pointer" : "not-allowed",
@@ -613,10 +618,7 @@ export default function Create({ permissions }) {
                                     <button
                                         type="button"
                                         className="cr-btn cr-btn--secondary"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            if (infoValid) setStep(2);
-                                        }}
+                                        onClick={goToPermissions}
                                         disabled={!infoValid}
                                     >
                                         Next: Permissions →

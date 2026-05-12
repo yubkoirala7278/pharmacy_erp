@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useForm } from "@inertiajs/react";
+import { Link, useForm, router } from "@inertiajs/react";
 import AppLayout from "@/Layouts/AppLayout";
 
 // ─── Icon primitives ────────────────────────────────────────
@@ -154,7 +154,6 @@ function ModuleRow({
     disabled,
 }) {
     const [open, setOpen] = useState(false);
-
     const ids = (Array.isArray(selectedIds) ? selectedIds : []).map((id) =>
         Number(id),
     );
@@ -337,6 +336,14 @@ export default function Edit({ role, permissions, rolePermissions }) {
     const totalSelected = data.permissions.length;
     const totalPerms = Object.values(permissions).flat().length;
     const infoValid = data.display_name.trim();
+    const goToPermissions = (e) => {
+        if (e && e.preventDefault) {
+            e.preventDefault();
+        }
+        if (infoValid) {
+            setStep(2);
+        }
+    };
 
     const handlePermChange = (type, idOrModule, modulePerms, allSelected) => {
         const currentPermissions = Array.isArray(data.permissions)
@@ -375,16 +382,14 @@ export default function Edit({ role, permissions, rolePermissions }) {
 
     const handleDelete = () => {
         destroy(route("admin.roles.destroy", role.id), {
-            onSuccess: () => {
-                window.location.href = route("admin.roles.index");
-            },
+            onSuccess: () => router.visit(route("admin.roles.index")),
         });
     };
 
     return (
         <AppLayout title={`Edit ${role.display_name}`}>
             <div className="cr-root">
-                {/* Back */}
+                {/* Back — outside the form, safe to use Link here */}
                 <Link href={route("admin.roles.index")} className="cr-back">
                     <ChevronLeft />
                     Back to Roles
@@ -401,7 +406,7 @@ export default function Edit({ role, permissions, rolePermissions }) {
                     <p>Update role details and manage assigned permissions.</p>
                 </div>
 
-                {/* Step tabs */}
+                {/* Step tabs — outside the form */}
                 <div className="cr-steps">
                     <button
                         type="button"
@@ -419,9 +424,7 @@ export default function Edit({ role, permissions, rolePermissions }) {
                     <button
                         type="button"
                         className={`cr-step-btn ${step === 2 ? "cr-step-btn--active" : ""}`}
-                        onClick={() => {
-                            if (infoValid) setStep(2);
-                        }}
+                        onClick={goToPermissions}
                         style={{
                             opacity: infoValid ? 1 : 0.5,
                             cursor: infoValid ? "pointer" : "not-allowed",
@@ -442,7 +445,7 @@ export default function Edit({ role, permissions, rolePermissions }) {
                 </div>
 
                 <form onSubmit={handleSubmit}>
-                    {/* ── Step 1: Basic Info ── */}
+                    {/* ── Step 1 ── */}
                     {step === 1 && (
                         <div className="cr-card" key="step1">
                             <div className="cr-card-head">
@@ -460,7 +463,6 @@ export default function Edit({ role, permissions, rolePermissions }) {
                             <div className="cr-card-body">
                                 <div className="cr-fields">
                                     <div className="cr-row">
-                                        {/* Role Name — read only */}
                                         <div className="cr-field">
                                             <label
                                                 htmlFor="name"
@@ -479,8 +481,6 @@ export default function Edit({ role, permissions, rolePermissions }) {
                                                 Role names cannot be changed
                                             </span>
                                         </div>
-
-                                        {/* Display Name */}
                                         <div className="cr-field">
                                             <label
                                                 htmlFor="display_name"
@@ -512,8 +512,6 @@ export default function Edit({ role, permissions, rolePermissions }) {
                                             )}
                                         </div>
                                     </div>
-
-                                    {/* Description */}
                                     <div className="cr-field">
                                         <label
                                             htmlFor="description"
@@ -554,7 +552,7 @@ export default function Edit({ role, permissions, rolePermissions }) {
                         </div>
                     )}
 
-                    {/* ── Step 2: Permissions ── */}
+                    {/* ── Step 2 ── */}
                     {step === 2 && (
                         <div className="cr-card" key="step2">
                             <div className="cr-card-head">
@@ -577,7 +575,6 @@ export default function Edit({ role, permissions, rolePermissions }) {
                                 </div>
                             )}
 
-                            {/* Progress bar */}
                             <div className="cr-perm-summary">
                                 <div className="cr-perm-summary-left">
                                     <span className="cr-perm-count">
@@ -607,11 +604,12 @@ export default function Edit({ role, permissions, rolePermissions }) {
                                             )
                                                 .flat()
                                                 .map((p) => p.id);
-                                            if (totalSelected === totalPerms) {
-                                                setData("permissions", []);
-                                            } else {
-                                                setData("permissions", all);
-                                            }
+                                            setData(
+                                                "permissions",
+                                                totalSelected === totalPerms
+                                                    ? []
+                                                    : all,
+                                            );
                                         }}
                                     >
                                         {totalSelected === totalPerms
@@ -621,7 +619,6 @@ export default function Edit({ role, permissions, rolePermissions }) {
                                 )}
                             </div>
 
-                            {/* Modules */}
                             <div className="cr-modules-list">
                                 {Object.entries(permissions).map(
                                     ([module, modulePermissions]) => (
@@ -656,7 +653,6 @@ export default function Edit({ role, permissions, rolePermissions }) {
                     {/* ── Footer ── */}
                     <div className="cr-footer">
                         <div className="cr-footer-left">
-                            {/* Delete button — only for non-system roles, shown on step 1 */}
                             {!isSystemRole && step === 1 && (
                                 <button
                                     type="button"
@@ -687,18 +683,21 @@ export default function Edit({ role, permissions, rolePermissions }) {
                         <div className="cr-footer-right">
                             {step === 1 ? (
                                 <>
-                                    <Link
-                                        href={route("admin.roles.index")}
+                                    <button
+                                        type="button"
                                         className="cr-btn cr-btn--ghost"
+                                        onClick={() =>
+                                            router.visit(
+                                                route("admin.roles.index"),
+                                            )
+                                        }
                                     >
                                         Cancel
-                                    </Link>
+                                    </button>
                                     <button
                                         type="button"
                                         className="cr-btn cr-btn--secondary"
-                                        onClick={() => {
-                                            if (infoValid) setStep(2);
-                                        }}
+                                        onClick={goToPermissions}
                                         disabled={!infoValid}
                                     >
                                         Next: Permissions →
@@ -737,7 +736,6 @@ export default function Edit({ role, permissions, rolePermissions }) {
                 </form>
             </div>
 
-            {/* Delete Modal */}
             {showDeleteConfirm && (
                 <DeleteModal
                     roleName={role.display_name}

@@ -21,15 +21,23 @@ class RoleController extends Controller
     public function index(Request $request): Response
     {
         $roles = Role::with('permissions')
-            ->when($request->search, function ($query, $search) {
-                $query->where('name', 'like', "%{$search}%")
-                    ->orWhere('display_name', 'like', "%{$search}%");
-            })
+            ->when(
+                $request->search,
+                fn($q, $s) =>
+                $q->where('name', 'like', "%{$s}%")
+                    ->orWhere('display_name', 'like', "%{$s}%")
+            )
+            ->when(
+                $request->sort_field,
+                fn($q) =>
+                $q->orderBy($request->sort_field, $request->sort_order ?? 'asc'),
+                fn($q) => $q->orderBy('name', 'asc')
+            )
             ->paginate(15);
 
         return Inertia::render('Admin/Roles/Index', [
-            'roles' => $roles,
-            'filters' => $request->only(['search']),
+            'roles'   => $roles,
+            'filters' => $request->only(['search', 'sort_field', 'sort_order']),
         ]);
     }
 

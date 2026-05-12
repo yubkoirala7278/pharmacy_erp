@@ -16,6 +16,8 @@
     },
     "dependencies": {
         "@inertiajs/react": "^3.1.1",
+        "primeicons": "^7.0.0",
+        "primereact": "^10.9.7",
         "react": "^19.2.6",
         "react-dom": "^19.2.6",
         "ziggy-js": "^2.6.2"

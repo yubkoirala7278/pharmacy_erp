@@ -10,4 +10,4 @@ Route::get('/dashboard', function () {
 })->name('dashboard');
 
 // Role Management
-Route::resource('roles', RoleController::class);
+Route::resource('roles', RoleController::class)->except(['show']);

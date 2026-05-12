@@ -530,13 +530,6 @@ export default function AppLayout({ children, title = "Dashboard" }) {
                         >
                             <NavIcon name="menu" />
                         </button>
-                        <div className="topbar-search">
-                            <NavIcon name="search" />
-                            <input
-                                type="text"
-                                placeholder="Search medicines, orders..."
-                            />
-                        </div>
                     </div>
                     <div className="topbar-right">
                         {/* Fullscreen button */}
